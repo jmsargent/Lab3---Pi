@@ -3,6 +3,7 @@ package com.company;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.sql.SQLOutput;
 import java.util.IllegalFormatException;
 import java.util.Scanner;
@@ -14,15 +15,27 @@ import java.util.Scanner;
 
 public class RatNum {
 
+    // leave them here meanwhile
     private int numerator;
     private int denominator;
+    private BigInteger num, den;
+
+
+    public BigInteger getNum() {
+        return num;
+    }
+
+    public BigInteger getDen() {
+        return den;
+    }
+
 
     /**
      * Sets numerator = 0, and denominator = 1
      */
     public RatNum() {
-        this.numerator = 0;
-        this.denominator = 1;
+        this.num = BigInteger.ZERO;
+        this.den = BigInteger.ONE;
     }
 
     /**
@@ -31,8 +44,7 @@ public class RatNum {
      * @param n numerator (int)
      */
     public RatNum(int n) {
-        this.numerator = n;
-        this.denominator = 1;
+        this(n,1);
     }
 
     /**
@@ -40,10 +52,29 @@ public class RatNum {
      *
      * @param s (String)
      */
+
     public RatNum(String s) {
-
         this(parse(s));
+    }
 
+
+
+    private RatNum(BigInteger num, BigInteger den){
+
+
+        // Because dividing by zero should be a crime.
+        if(den.equals(BigInteger.ZERO))
+            throw new NumberFormatException("Denominator = 0");
+
+        // sets numerator and denominator to the provided values, shortens with the greatest common denominator
+        this.num = num.divide(num.gcd(den));
+        this.den = den.divide(num.gcd(den));
+
+        // compare to returns -1 if less than argument
+        if(den.compareTo(BigInteger.ZERO) == -1){
+            this.num = this.num.negate();
+            this.den = this.den.negate();
+        }
     }
 
 
@@ -56,24 +87,9 @@ public class RatNum {
 
     public RatNum(int numerator, int denominator) {
 
-        if (denominator == 0)
-            throw new NumberFormatException("Denominator = 0");
+        this(new BigInteger(String.valueOf(numerator)),
+                new BigInteger(String.valueOf(denominator)));
 
-        if (gcd(numerator, denominator) != 1) {
-            this.numerator = (numerator / gcd(numerator, denominator));
-            this.denominator = (denominator / gcd(numerator, denominator));
-
-        } else {
-
-            this.numerator = numerator;
-            this.denominator = denominator;
-
-        }
-
-        if (denominator < 0) {
-            this.numerator = -this.numerator;
-            this.denominator = Math.abs(this.denominator);
-        }
     }
 
 
@@ -83,14 +99,15 @@ public class RatNum {
      * @param ratnum
      */
     public RatNum(RatNum ratnum) {
-        this.numerator = ratnum.getNumerator();
-        this.denominator = ratnum.getDenominator();
+        this.num = ratnum.getNum();
+        this.den = ratnum.getDen();
     }
 
     /**
      * Takes String . Returns RatNum with the given parameters.
      * @param frac string parameter written in one of the following forms:  "a/b", "-a/b", "a/-b" or "a"
      */
+
 
     public static RatNum parse(String frac) {
 
@@ -118,7 +135,7 @@ public class RatNum {
      */
 
     public int getNumerator() {
-        return this.numerator;
+        return this.num.intValue();
     }
 
     /**
@@ -127,7 +144,7 @@ public class RatNum {
      */
 
     public int getDenominator() {
-        return this.denominator;
+        return this.den.intValue();
     }
 
     /**

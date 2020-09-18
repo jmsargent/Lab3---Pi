@@ -9,8 +9,5 @@ public class Main {
 
         // i wanna commit this
         System.out.println("hej");
-
-
-
     }
 }
