@@ -8,5 +8,7 @@ public class Main {
         System.out.println(new RatNum(1,2).toString());
 
 
+
+        //detta är lite random dumheter som jag tänkte vi behöver
     }
 }
