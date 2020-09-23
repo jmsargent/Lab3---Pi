@@ -1,3 +1,5 @@
+package com.company;
+
 public class RatNumTest4 {
 
     public static boolean ok = true;

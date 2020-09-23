@@ -1,23 +1,15 @@
 package com.company;
 
-
-import java.io.File;
-import java.io.IOException;
 import java.math.BigInteger;
-import java.sql.SQLOutput;
-import java.util.IllegalFormatException;
-import java.util.Scanner;
 
 
 /**
- * Creates Rational number
+ * A class made to store Rational numbers, in the form of fractions a/b
  */
 
 public class RatNum {
 
-    // leave them here meanwhile
-    private int numerator;
-    private int denominator;
+
     private BigInteger num, den;
 
 
@@ -39,9 +31,9 @@ public class RatNum {
     }
 
     /**
-     * sets denominator to 1, parameter to numerator
+     * Sets numerator to n and denominator to 1
      *
-     * @param n numerator (int)
+     * @param n numerator
      */
     public RatNum(int n) {
         this(n,1);
@@ -70,7 +62,7 @@ public class RatNum {
         this.num = num.divide(num.gcd(den));
         this.den = den.divide(num.gcd(den));
 
-        // compare to returns -1 if less than argument
+        // compare to returns -1 if less than argument, it's probably an overridden method which causes warning
         if(den.compareTo(BigInteger.ZERO) == -1){
             this.num = this.num.negate();
             this.den = this.den.negate();
@@ -108,7 +100,6 @@ public class RatNum {
      * @param frac string parameter written in one of the following forms:  "a/b", "-a/b", "a/-b" or "a"
      */
 
-
     public static RatNum parse(String frac) {
 
         int pLen = frac.length();
@@ -134,9 +125,7 @@ public class RatNum {
      * @return numerator
      */
 
-    public int getNumerator() {
-        return this.num.intValue();
-    }
+
 
     /**
      * Getter method for denominator.
@@ -147,70 +136,26 @@ public class RatNum {
         return this.den.intValue();
     }
 
-    /**
-     * Setter method for numerator.
-     * @param numerator int
-     */
-
-
-
-    /**
-     * @param m First integer to compare
-     * @param n Second integer to compare
-     * @return the greatest common divisor commonly refered as the GCD(m,n)
-     */
-
-    static int gcd(int m, int n) {
-
-        int gcd = 1;
-
-        if (n == 0 && m == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        /* if anyone of the 2 integers is zero then return the absolute value of the other number
-        if they're the same value, return  the absolute value of any of them*/
-        if (m == 0) {
-            return Math.abs(n);
-        } else if (n == 0) {
-            return Math.abs(m);
-        } else if (n == m) {
-            return Math.abs(n);
-        }
-
-        // The absolute value of the number closest to zero is the biggest possible cd for any 2 numbers
-        if (Math.abs(m) > Math.abs(n)) {
-
-            for (int i = Math.abs(m); i > 0; i--) {
-
-                if (m % i == 0 && n % i == 0) {
-                    return i;
-                }
-            }
-
-        } else if (Math.abs(m) < Math.abs(n)) {
-            for (int i = Math.abs(n); i > 0; i--) {
-                if (m % i == 0 && n % i == 0) {
-                    return i;
-                }
-            }
-        }
-        return gcd;
+    public int getNumerator() {
+        return this.num.intValue();
     }
+
+
 
     /**
      * @return The fraction in a String-format
      */
     @Override
     public String toString() {
-        return (Integer.toString(this.numerator) + "/" + Integer.toString(this.denominator));
+        return (this.num.toString() + "/" + this.den.toString());
     }
 
-
-    /**
+    /*
      * @param r - object which you wanna compare to RatNum
      * @return true if the r is identical to the RatNum
      */
+
+    /*
     @Override
     public boolean equals(Object r) {
         if (r == null) {
@@ -221,9 +166,9 @@ public class RatNum {
         }
 
         RatNum r2 = (RatNum) r;
-        return (this.numerator == r2.getNumerator() && this.denominator == r2.getDenominator());
+        return (this.num.toString() == r2.getNum() && this.denominator == r2.getDenominator());
     }
-
+*/
 
     /**
      * @param r RatNum you wanna compare
@@ -231,16 +176,16 @@ public class RatNum {
      */
     public boolean lessThan(RatNum r) {
 
-        int rExtnum, extNum;
+        int compRes;
+
         // extend fractions to the same denominators
+        BigInteger rExtendedNum, extendedNum;
 
-        rExtnum = r.getNumerator() * this.getDenominator();
-        extNum = this.numerator * r.getDenominator();
+        rExtendedNum = r.getNum().multiply(this.den);
+        extendedNum = this.num.multiply(r.getDen());
 
-        if (extNum < rExtnum) {
-            return true;
-        }
-        return false;
+        compRes = extendedNum.compareTo(rExtendedNum);
+        return compRes == -1;
     }
 
     /**
@@ -251,12 +196,17 @@ public class RatNum {
 
         int sumNumerator, sumDenominator;
 
-        // a/b + c/d = (a*d + c*b) / b*d
-        sumDenominator = (this.denominator * r.getDenominator());
-        sumNumerator = (this.numerator * r.getDenominator() + r.getNumerator() * this.getDenominator());
+        BigInteger sumNum, sumDen;
 
-        //gcd happens here (WHOAH)
-        return new RatNum(sumNumerator, sumDenominator);
+        // a/b + c/d = (a*d + c*b) / b*d
+
+        // extend numerators & add them together
+        sumNum = new BigInteger(this.num.multiply(r.getDen()).toString());
+        sumNum = sumNum.add(r.getNum().multiply(this.num));
+
+        // extend denominator
+        sumDen = new BigInteger(this.den.multiply(r.getDen()).toString());
+        return new RatNum(sumNum, sumDen);
     }
 
 
@@ -266,12 +216,20 @@ public class RatNum {
      */
     public RatNum sub(RatNum r) {
 
+        BigInteger sumNum, sumDen;
         int newNum, newDen;
+
+        // Extend numerators & subtract them
+        sumNum = new BigInteger(this.num.multiply(r.getDen()).toString());
+        sumNum = sumNum.subtract(r.getNum().multiply(this.num));
+
+        // extend denominator
+        sumDen = new BigInteger(this.den.multiply(r.getDen()).toString());
 
         newNum = ((this.getNumerator() * r.getDenominator()) - (r.getNumerator() * this.getDenominator()));
         newDen = this.getDenominator() * r.getDenominator();
 
-        return new RatNum(newNum, newDen);
+        return new RatNum(sumNum, sumDen);
     }
 
     /**
@@ -280,7 +238,7 @@ public class RatNum {
      * @return resulting RatNum.
      */
     public RatNum mul(RatNum r) {
-        return new RatNum((r.getNumerator() * this.getNumerator()), (r.getDenominator() * this.getDenominator()));
+        return new RatNum(r.getNum().multiply(this.num),r.getDen().multiply(this.den));
     }
 
     /**
@@ -289,7 +247,7 @@ public class RatNum {
      * @return (RatNum)
      */
     public RatNum div(RatNum r) {
-        return new RatNum((this.numerator * r.getDenominator()), (this.denominator * r.getNumerator()));
+        return new RatNum((this.num.multiply(r.getDen())), (this.den.multiply(r.getDen())));
     }
 
 
@@ -301,19 +259,23 @@ public class RatNum {
      */
     public String toDotString(int decimalCount) {
 
-        String s = "a";
-        int temp;
+        String s;
+        BigInteger t;
 
-        temp = this.numerator / this.denominator;
+        // t = num / den
+        t = new BigInteger(this.num.divide(this.den).toString());
 
-        if (this.numerator < 0) {
-            if (temp == 0) {
-                s = "-" + String.valueOf(temp);
-            } else {
-                s = String.valueOf(temp);
+
+        // if num < 0
+        if(this.num.compareTo(BigInteger.ZERO) == -1){
+            // if t == 0
+            if(t.compareTo(BigInteger.ZERO) == 0){
+                s = "-" + t.toString();
+            }else {
+                s = t.toString();
             }
-        } else {
-            s = String.valueOf(temp);
+        }else {
+            s = t.toString();
         }
 
         if (decimalCount == 0)
@@ -322,6 +284,16 @@ public class RatNum {
         // for decimalcount > 0 we need a decimalpoint
         s += ".";
 
+        t = this.num.mod(this.den).abs();
+
+        t = this.num.mod(this.den).abs();
+        for (int i = 0; i < decimalCount; i++) {
+            t = t.multiply(BigInteger.TEN);
+            s += t.divide(this.den).toString();
+            t = t.mod(this.den);
+        }
+
+        /*
         temp = this.numerator % this.denominator;
         temp = Math.abs(temp);
         for (int i = 0; i < decimalCount; i++) {
@@ -330,11 +302,9 @@ public class RatNum {
             s += String.valueOf(temp / this.denominator);
             temp %= this.denominator;
 
-        }
-        System.out.println(s);
+        }*/
         return s;
     }
-
 }
 
 
