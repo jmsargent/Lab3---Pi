@@ -15,8 +15,8 @@ public class RatNum {
     private BigInteger denominator;
 
     private RatNum(BigInteger n, BigInteger d) {
-    BigInteger numerator = new BigInteger(String.valueOf(n));
-    BigInteger denominator = new BigInteger(String.valueOf(d));
+    this.numerator = n;
+    this.denominator = d;
     }
 
     public RatNum(int n, int d) {
@@ -29,14 +29,14 @@ public class RatNum {
         denominator = BigInteger.ONE;
     }
 
-    public RatNum(BigInteger numerator) {
-        numerator = new BigInteger(String.valueOf(numerator));
-        denominator = BigInteger.ONE;
-    }
+    public RatNum(int n) {
+        this(new BigInteger(String.valueOf(n)),
+                new BigInteger("1"));
+ }
 
-    public RatNum(RatNum ratNum) {
+    public RatNum(String s) {
 
-        this.parse(ratNum);
+        this.parse(s);
 
     }
 
@@ -80,11 +80,11 @@ public class RatNum {
      * @param frac string parameter written in one of the following forms:  "a/b", "-a/b", "a/-b" or "a"
      */
 
-    public static RatNum parse(RatNum frac){
-        String tal = frac.toString();
+    public static RatNum parse(String frac){
+
         RatNum ratNum;
-        int pLen = tal.length();
-        int dashPos = tal.indexOf('/');
+        int pLen = frac.length();
+        int dashPos = frac.indexOf('/');
 
         if (dashPos == -1) {
 
@@ -92,22 +92,22 @@ public class RatNum {
 
         } else {
 
-            String sNumerator = tal.substring(0, dashPos);
-            String sDenominator = tal.substring(dashPos + 1, pLen);
+            String sNumerator = frac.substring(0, dashPos);
+            String sDenominator = frac.substring(dashPos + 1, pLen);
             ratNum = new RatNum(Integer.parseInt(sNumerator), Integer.parseInt(sDenominator));
         }
 
         return ratNum;
     }
 
-//    public int getNumerator() {
-//        return this.numerator;
-//    }
+    public int getNumerator() {
+        return numerator.intValue();
+    }
 
 
-//    public int getDenominator() {
-//        return this.denominator;
-//    }
+    public int getDenominator() {
+        return denominator.intValue();
+    }
 
 
 /*    static int gcd(int m, int n) {
@@ -245,6 +245,12 @@ public class RatNum {
     }
 
 
+    public RatNum pow(int exp){
+            numerator = numerator.pow(exp);
+            denominator =denominator.pow(exp);
+
+        return new RatNum(numerator, denominator);
+    }
     /**
      * Returns the rational number in decimal format rounded down
      * with the number of decimals provided as parameter
