@@ -15,8 +15,8 @@ public class RatNum {
     private BigInteger denominator;
 
     private RatNum(BigInteger n, BigInteger d) {
-    this.numerator = n;
-    this.denominator = d;
+        this.numerator = n;
+        this.denominator = d;
     }
 
     public RatNum(int n, int d) {
@@ -32,7 +32,7 @@ public class RatNum {
     public RatNum(int n) {
         this(new BigInteger(String.valueOf(n)),
                 new BigInteger("1"));
- }
+    }
 
     public RatNum(String s) {
 
@@ -80,7 +80,7 @@ public class RatNum {
      * @param frac string parameter written in one of the following forms:  "a/b", "-a/b", "a/-b" or "a"
      */
 
-    public static RatNum parse(String frac){
+    public static RatNum parse(String frac) {
 
         RatNum ratNum;
         int pLen = frac.length();
@@ -156,38 +156,19 @@ public class RatNum {
         return (numerator.toString()) + "/" + (denominator.toString());
     }
 
-
-    /**
-     * @param r - object which you wanna compare to RatNum
-     * @return true if the r is identical to the RatNum
-     */
-/*    @Override
-    public boolean equals(Object r) {
-        if (r == null) {
-            return false;
-        }
-        if (!(r instanceof RatNum)) {
-            return false;
-        }
-        int s = numerator.equals(RatNum.numerator);
-        RatNum r2 = (RatNum) r;
-        return (this.numerator == r2.getNumerator() && this.denominator == r2.getDenominator());
-    }
-
-*/
     /**
      * @param r RatNum you wanna compare
      * @return true if the parameter is smaller than the RatNum which it's being compared to.
      */
     public boolean lessThan(RatNum r) {
 
-       BigInteger rExtnum, extNum;
+        BigInteger rExtnum, extNum;
         // extend fractions to the same denominators
         rExtnum = denominator.multiply(r.numerator);
         extNum = numerator.multiply(r.denominator);
 
-       // rExtnum = r.getNumerator() * this.getDenominator();
-       // extNum = this.numerator * r.getDenominator();
+        // rExtnum = r.getNumerator() * this.getDenominator();
+        // extNum = this.numerator * r.getDenominator();
 
 
         return (extNum.compareTo(rExtnum)) == -1;
@@ -245,12 +226,13 @@ public class RatNum {
     }
 
 
-    public RatNum pow(int exp){
-            numerator = numerator.pow(exp);
-            denominator =denominator.pow(exp);
+    public RatNum pow(int exp) {
+        numerator = numerator.pow(exp);
+        denominator = denominator.pow(exp);
 
         return new RatNum(numerator, denominator);
     }
+
     /**
      * Returns the rational number in decimal format rounded down
      * with the number of decimals provided as parameter
@@ -264,25 +246,25 @@ public class RatNum {
         BigInteger temp;
 
         temp = numerator.divide(denominator);
+/*
+        if ((numerator.signum() == -1 && denominator.signum() == -1) || (numerator.signum() >=0 && denominator.signum() >= 0))  {
 
-        if (numerator.signum() < 0) {
-            if (temp.signum() == 0) {
-                s = "-" + String.valueOf(temp);
-            } else {
                 s = String.valueOf(temp);
-            }
-        } else {
-            s = String.valueOf(temp);
-        }
+            } else {
+                s =  "-" + String.valueOf(temp);
 
+            }
+*/
+        s = String.valueOf(temp);
         if (decimalCount == 0)
             return s;
 
         // for decimalcount > 0 we need a decimalpoint
         s += ".";
-
+        numerator = numerator.abs();
+        denominator = denominator.abs();
         temp = numerator.mod(denominator);
-        temp = temp.abs();
+
         for (int i = 0; i < decimalCount; i++) {
 
             temp = temp.multiply(BigInteger.TEN);
@@ -290,6 +272,19 @@ public class RatNum {
             temp = temp.mod(denominator);
 
         }
+        if(s.contains("-")){
+            int slen = s.length();
+            String zero = "0";
+            for (int i = 1; i < decimalCount; i++) {
+              zero += '0';
+            };
+            int dot = s.indexOf('.');
+            String check = s.substring(dot+1,slen);
+            if(check.contentEquals(zero)){
+                s = s.substring(1,slen);
+            }
+        }
+
         System.out.println(s);
         return s;
     }
