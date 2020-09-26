@@ -9,6 +9,7 @@ import java.util.IllegalFormatException;
 import java.util.Scanner;
 
 
+
 public class RatNum {
 
     private BigInteger numerator;

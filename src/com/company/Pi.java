@@ -9,12 +9,7 @@ public class Pi {
         if (args.length > 0) {
             decimalCount = Integer.valueOf(args[0]);
         }
-        RatNum TestNum = new RatNum(9, -910);
-        RatNum TestNum2 = new RatNum (100,-3);
-        RatNum TestNum3 = new RatNum (-100,99);
-        System.out.println(TestNum.toDotString(2));
-        System.out.println(TestNum2.toDotString(1));
-        System.out.println(TestNum3.toDotString(2));
+
         RatNum res3 = new RatNum(0,1);
         // ersätt följande två rader med din lösning
         for (int i = 0; i < decimalCount; i++) {
