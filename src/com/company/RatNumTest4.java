@@ -48,7 +48,6 @@ public class RatNumTest4 {
         } catch (StackOverflowError e) {
             fail("divide many times");
         }
-
         // computes 1/2 + 1/4 + 1/8 + 1/16 + 1/32 ...
         RatNum acc = zero;
         RatNum next = half;
@@ -75,3 +74,5 @@ public class RatNumTest4 {
     }
 
 }
+
+

@@ -36,7 +36,7 @@ public class RatNum {
      * @param n numerator
      */
     public RatNum(int n) {
-        this(n,1);
+        this(n, 1);
     }
 
     /**
@@ -50,12 +50,11 @@ public class RatNum {
     }
 
 
-
-    private RatNum(BigInteger num, BigInteger den){
+    private RatNum(BigInteger num, BigInteger den) {
 
 
         // Because dividing by zero should be a crime.
-        if(den.equals(BigInteger.ZERO))
+        if (den.equals(BigInteger.ZERO))
             throw new NumberFormatException("Denominator = 0");
 
         // sets numerator and denominator to the provided values, shortens with the greatest common denominator
@@ -63,7 +62,7 @@ public class RatNum {
         this.den = den.divide(num.gcd(den));
 
         // compare to returns -1 if less than argument, it's probably an overridden method which causes warning
-        if(den.compareTo(BigInteger.ZERO) == -1){
+        if (den.compareTo(BigInteger.ZERO) == -1) {
             this.num = this.num.negate();
             this.den = this.den.negate();
         }
@@ -97,6 +96,7 @@ public class RatNum {
 
     /**
      * Takes String . Returns RatNum with the given parameters.
+     *
      * @param frac string parameter written in one of the following forms:  "a/b", "-a/b", "a/-b" or "a"
      */
 
@@ -126,9 +126,9 @@ public class RatNum {
      */
 
 
-
     /**
      * Getter method for denominator.
+     *
      * @return denominator int
      */
 
@@ -139,7 +139,6 @@ public class RatNum {
     public int getNumerator() {
         return this.num.intValue();
     }
-
 
 
     /**
@@ -155,7 +154,7 @@ public class RatNum {
      * @return true if the r is identical to the RatNum
      */
 
-    /*
+
     @Override
     public boolean equals(Object r) {
         if (r == null) {
@@ -166,9 +165,9 @@ public class RatNum {
         }
 
         RatNum r2 = (RatNum) r;
-        return (this.num.toString() == r2.getNum() && this.denominator == r2.getDenominator());
+        return (this.num.toString().equals(r2.getNum().toString())  && this.den.toString().equals(r2.getDen().toString()));
     }
-*/
+
 
     /**
      * @param r RatNum you wanna compare
@@ -194,15 +193,14 @@ public class RatNum {
      */
     public RatNum add(RatNum r) {
 
-        int sumNumerator, sumDenominator;
 
-        BigInteger sumNum, sumDen;
+        BigInteger sumNum,sumDen,t1,t2;
 
-        // a/b + c/d = (a*d + c*b) / b*d
+        t1 = this.num.multiply(r.getDen());
+        t2 = r.getNum().multiply(this.den);
 
-        // extend numerators & add them together
-        sumNum = new BigInteger(this.num.multiply(r.getDen()).toString());
-        sumNum = sumNum.add(r.getNum().multiply(this.num));
+        sumNum = t1.add(t2);
+
 
         // extend denominator
         sumDen = new BigInteger(this.den.multiply(r.getDen()).toString());
@@ -216,94 +214,100 @@ public class RatNum {
      */
     public RatNum sub(RatNum r) {
 
-        BigInteger sumNum, sumDen;
-        int newNum, newDen;
+        BigInteger sumNum,sumDen,t1,t2;
 
-        // Extend numerators & subtract them
-        sumNum = new BigInteger(this.num.multiply(r.getDen()).toString());
-        sumNum = sumNum.subtract(r.getNum().multiply(this.num));
+        t1 = this.num.multiply(r.getDen());
+        t2 = r.getNum().multiply(this.den);
+        sumNum = t1.subtract(t2);
+
 
         // extend denominator
         sumDen = new BigInteger(this.den.multiply(r.getDen()).toString());
-
-        newNum = ((this.getNumerator() * r.getDenominator()) - (r.getNumerator() * this.getDenominator()));
-        newDen = this.getDenominator() * r.getDenominator();
-
         return new RatNum(sumNum, sumDen);
     }
 
     /**
      * Returns the product of The ratnum and the parameter r
+     *
      * @param r (RatNum)
      * @return resulting RatNum.
      */
     public RatNum mul(RatNum r) {
-        return new RatNum(r.getNum().multiply(this.num),r.getDen().multiply(this.den));
+        return new RatNum(r.getNum().multiply(this.num), r.getDen().multiply(this.den));
     }
 
     /**
      * Returns the resulting quota between the RatNum and its parameter
+     *
      * @param r (RatNum)
      * @return (RatNum)
      */
     public RatNum div(RatNum r) {
-        return new RatNum((this.num.multiply(r.getDen())), (this.den.multiply(r.getDen())));
+        return new RatNum((this.num.multiply(r.getDen())), (this.den.multiply(r.getNum())));
+    }
+
+    /**
+     * Raise to the power of the exponent.
+     * @param exp - the
+     * @return
+     */
+    public RatNum pow(int exp){
+        return new RatNum(this.num.pow(exp),this.den.pow(exp));
     }
 
 
     /**
      * Returns the rational number in decimal format rounded down
      * with the number of decimals provided as parameter
+     *
      * @param decimalCount (Int): Number of decimals
-     * @return (String)
      */
     public String toDotString(int decimalCount) {
 
-        String s;
-        BigInteger t;
-
-        // t = num / den
-        t = new BigInteger(this.num.divide(this.den).toString());
+        boolean isNegative = this.num.compareTo(BigInteger.ZERO) == -1; // .comp returns -1 if smaller
+        boolean isZero = this.num.compareTo(BigInteger.ZERO) == 0;
+        BigInteger bigTemp = this.num.abs();
 
 
-        // if num < 0
-        if(this.num.compareTo(BigInteger.ZERO) == -1){
-            // if t == 0
-            if(t.compareTo(BigInteger.ZERO) == 0){
-                s = "-" + t.toString();
-            }else {
-                s = t.toString();
+        String converted;
+
+        // provides us with the digits before the decimalpoint
+        if (isNegative && (!isZero)) {
+
+            converted = "-" + bigTemp.divide(this.den).toString();
+
+        } else {
+
+            converted = bigTemp.divide(this.den).toString();
+
+        }
+
+        // Get the remainder
+
+        if (decimalCount > 0) {
+            converted += ".";
+        }else{
+            return converted;
+        }
+
+        bigTemp = bigTemp.mod(this.den);
+
+        for (int i = 0; i < decimalCount; i++) {
+
+            // if the remainder is zero all we have to do is concat decimalcount number of zeros
+            if (bigTemp.equals(BigInteger.ZERO)) {
+                converted += "0";
+            } else {
+
+                bigTemp = bigTemp.multiply(BigInteger.TEN);
+                converted += bigTemp.divide(this.den);
+
+                bigTemp = bigTemp.mod(this.den);
             }
-        }else {
-            s = t.toString();
+
         }
 
-        if (decimalCount == 0)
-            return s;
-
-        // for decimalcount > 0 we need a decimalpoint
-        s += ".";
-
-        t = this.num.mod(this.den).abs();
-
-        t = this.num.mod(this.den).abs();
-        for (int i = 0; i < decimalCount; i++) {
-            t = t.multiply(BigInteger.TEN);
-            s += t.divide(this.den).toString();
-            t = t.mod(this.den);
-        }
-
-        /*
-        temp = this.numerator % this.denominator;
-        temp = Math.abs(temp);
-        for (int i = 0; i < decimalCount; i++) {
-
-            temp *= 10;
-            s += String.valueOf(temp / this.denominator);
-            temp %= this.denominator;
-
-        }*/
-        return s;
+        return converted;
     }
 }
 
